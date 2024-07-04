@@ -5,6 +5,7 @@ import com.masterspring.backenddayoff.dto.request.LeaveRequestPost;
 import com.masterspring.backenddayoff.dto.response.LeaveRequestPaginationResponse;
 import com.masterspring.backenddayoff.dto.response.LeaveRequestPostResponse;
 import com.masterspring.backenddayoff.service.LeaveRequestService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/leave_request")
+@Tag(name = "Leave Request")
 public class LeaveRequestController {
     private final LeaveRequestService leaveRequestService;
 

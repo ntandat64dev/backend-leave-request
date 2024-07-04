@@ -4,7 +4,7 @@ VALUES ('IT');
 INSERT INTO `users`(`email`, `password`, `full_name`, `birthdate`, `work_date`, `address`, `phone`, `role`, `department_id`, `manager_id`)
 VALUES ('manager@gmail.com', '00000000', 'Craig Berry', '1990-09-12', '2023-01-01', '21246 Richard Corners Apt. 232', '0123456789', 0, '1', null),
        ('admin@gmail.com', '00000000', 'Johnny Gardner', '1995-04-24', '2023-01-29', '7045 Stanton Meadow', '0123456789', 1, '1', 1),
-       ('user1@gmail.com', '00000000', 'Maxwell Salazar', '1997-01-11', '2023-06-10', '21788 Leffler Vista Suite 094', '0123456789', 2, '1', 1),
+       ('20130221@st.hcmuaf.edu.vn', '00000000', 'Maxwell Salazar', '1997-01-11', '2023-06-10', '21788 Leffler Vista Suite 094', '0123456789', 2, '1', 1),
        ('user2@gmail.com', '00000000', 'Alec Holden', '1998-09-05', '2024-01-13', '7779 Ella Hills', '0123456789', 2, '1', 1),
        ('user3@gmail.com', '00000000', 'Floyd Hayward', '1999-05-17', '2024-02-11', '268 Amalia Lock Apt. 253', '0123456789', 2, '1', 1);
 
