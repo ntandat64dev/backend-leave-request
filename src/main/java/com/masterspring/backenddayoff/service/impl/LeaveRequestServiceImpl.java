@@ -30,12 +30,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Transactional(readOnly = true)
 public class LeaveRequestServiceImpl implements LeaveRequestService {
-    private final LeaveRequestRepository leaveRequestRepository;
     private final UserRepository userRepository;
-    private final LeaveRequestPostMapper leaveRequestPostMapper;
+    private final LeaveRequestRepository leaveRequestRepository;
     private final LeaveRemainRepository leaveRemainRepository;
 
     private final NotificationService notificationService;
+    private final LeaveRequestPostMapper leaveRequestPostMapper;
 
     @Override
     @Transactional
@@ -59,7 +59,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
 
         // Save leave request to the database.
-        var leaveRequest = leaveRequestPostMapper.leaveRequestPostToLeaveRequest(leaveRequestPost);
+        var leaveRequest = leaveRequestPostMapper.toRequest(leaveRequestPost);
         leaveRequest.setStatus(2);
         leaveRequest.setUser(user.get());
         leaveRequestRepository.save(leaveRequest);
@@ -71,7 +71,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         // Post notification (and send email)
         notificationService.postNotification("""
-                        Leave request for %s:
+                        Leave request sent for %s:
                         From %s to %s
                         Reason: %s
                         Status: Waiting
@@ -83,8 +83,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                                 leaveRequest.getReason()),
                 user.get().getId());
 
-        // Return response to the client.
-        return leaveRequestPostMapper.leaveRequestToLeaveRequestPostResponse(leaveRequest);
+        // Map to DTO and return to the client.
+        return leaveRequestPostMapper.toResponse(leaveRequest);
     }
 
     @Override
@@ -102,6 +102,16 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         response.setId(leaveRequest.getId());
         response.setStatus(leaveRequest.getStatus());
         response.setManager_id(leaveRequest.getUser().getId());
+
+        // If the request was accepted or rejected, post notification (and send email).
+        if (leaveRequest.getStatus() == 0 || leaveRequest.getStatus() == 1) {
+            notificationService.postNotification(
+                    "Your request #%s was %s:".formatted(
+                            leaveRequest.getId(),
+                            leaveRequest.getStatus() == 0 ? "Accepted" : "Rejected"),
+                    leaveRequest.getUser().getId());
+        }
+
         return response;
     }
 

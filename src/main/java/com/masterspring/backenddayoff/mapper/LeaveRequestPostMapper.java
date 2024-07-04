@@ -12,8 +12,8 @@ public interface LeaveRequestPostMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "status", ignore = true)
-    LeaveRequest leaveRequestPostToLeaveRequest(LeaveRequestPost leaveRequestPost);
+    LeaveRequest toRequest(LeaveRequestPost leaveRequestPost);
 
     @Mapping(target = "createdBy", expression = "java(leaveRequest.getUser().getId())")
-    LeaveRequestPostResponse leaveRequestToLeaveRequestPostResponse(LeaveRequest leaveRequest);
+    LeaveRequestPostResponse toResponse(LeaveRequest leaveRequest);
 }
