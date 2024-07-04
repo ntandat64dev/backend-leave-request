@@ -11,7 +11,7 @@
 
 #### Database Schema
 
-<img src="./screenshots/schema.png" alt="">
+<img src="screenshots/db_schema.png" alt="">
 
 `role`
 
