@@ -12,35 +12,38 @@ import com.masterspring.backenddayoff.repository.LeaveRemainRepository;
 import com.masterspring.backenddayoff.repository.LeaveRequestRepository;
 import com.masterspring.backenddayoff.repository.UserRepository;
 import com.masterspring.backenddayoff.service.LeaveRequestService;
+import com.masterspring.backenddayoff.service.NotificationService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class LeaveRequestServiceImpl implements LeaveRequestService {
     private final LeaveRequestRepository leaveRequestRepository;
     private final UserRepository userRepository;
     private final LeaveRequestPostMapper leaveRequestPostMapper;
     private final LeaveRemainRepository leaveRemainRepository;
 
-    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRequestRepository, UserRepository userRepository, LeaveRequestPostMapper leaveRequestPostMapper,
-                                   LeaveRemainRepository leaveRemainRepository) {
-        this.leaveRequestRepository = leaveRequestRepository;
-        this.userRepository = userRepository;
-        this.leaveRequestPostMapper = leaveRequestPostMapper;
-        this.leaveRemainRepository = leaveRemainRepository;
-    }
+    private final NotificationService notificationService;
 
     @Override
+    @Transactional
     public LeaveRequestPostResponse postLeaveRequest(LeaveRequestPost leaveRequestPost) {
-        if (leaveRequestPost.getStartDate().isAfter(leaveRequestPost.getEndDate())) throw new AppException(400, "Start date cannot be after end date.");
+        if (leaveRequestPost.getStartDate().isAfter(leaveRequestPost.getEndDate()))
+            throw new AppException(400, "Start date cannot be after end date.");
 
-        // If user not exist then throw error.
+        // If the user does not exist, then throw error.
         var user = userRepository.findById(leaveRequestPost.getUserId());
         if (user.isEmpty()) throw new AppException(400, "User not found.");
 
@@ -51,10 +54,11 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         var endDateTime = leaveRequestPost.getEndDate().atTime(23, 59, 59);
         int days = (int) Duration.between(starDateTime, endDateTime).toDays() + 1;
         if (days > remainDays) {
-            throw new AppException(400, "Request days exceeds remain days. (Remain days: %s, request days: %s)".formatted(remainDays, days));
+            throw new AppException(400, "Request days exceeds remain days. (Remain days: %s, request days: %s)"
+                    .formatted(remainDays, days));
         }
 
-        // Save leave request to database.
+        // Save leave request to the database.
         var leaveRequest = leaveRequestPostMapper.leaveRequestPostToLeaveRequest(leaveRequestPost);
         leaveRequest.setStatus(2);
         leaveRequest.setUser(user.get());
@@ -63,11 +67,28 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         // Decrease leave remains.
         leaveRemain.setRemainDays(remainDays - days);
 
-        // Return response to client.
+        log.info("Leave request saved: userId=%s".formatted(user.get().getId()));
+
+        // Post notification (and send email)
+        notificationService.postNotification("""
+                        Leave request for %s:
+                        From %s to %s
+                        Reason: %s
+                        Status: Waiting
+                        """
+                        .formatted(
+                                user.get().getEmail(),
+                                leaveRequest.getStartDate(),
+                                leaveRequest.getEndDate(),
+                                leaveRequest.getReason()),
+                user.get().getId());
+
+        // Return response to the client.
         return leaveRequestPostMapper.leaveRequestToLeaveRequestPostResponse(leaveRequest);
     }
 
     @Override
+    @Transactional
     public LeaveRequestStatusDto confirmLeaveRequest(Long id, LeaveRequestStatusDto leaveRequestDto) {
         LeaveRequest leaveRequest = leaveRequestRepository.findById(id).orElseThrow(()
                 -> new AppException(500, "could not found"));
