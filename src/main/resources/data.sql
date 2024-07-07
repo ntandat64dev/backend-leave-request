@@ -4,7 +4,7 @@ VALUES ('IT');
 INSERT INTO `users`(`email`, `password`, `full_name`, `birthdate`, `work_date`, `address`, `phone`, `role`, `department_id`, `manager_id`)
 VALUES ('manager@gmail.com', '00000000', 'Craig Berry', '1990-09-12', '2023-01-01', '21246 Richard Corners Apt. 232', '0123456789', 0, '1', null),
        ('admin@gmail.com', '00000000', 'Johnny Gardner', '1995-04-24', '2023-01-29', '7045 Stanton Meadow', '0123456789', 1, '1', 1),
-       ('20130221@st.hcmuaf.edu.vn', '00000000', 'Maxwell Salazar', '1997-01-11', '2023-06-10', '21788 Leffler Vista Suite 094', '0123456789', 2, '1', 1),
+       ('leaverequest.axonactive@gmail.com', '00000000', 'Maxwell Salazar', '1997-01-11', '2023-06-10', '21788 Leffler Vista Suite 094', '0123456789', 2, '1', 1),
        ('user2@gmail.com', '00000000', 'Alec Holden', '1998-09-05', '2024-01-13', '7779 Ella Hills', '0123456789', 2, '1', 1),
        ('user3@gmail.com', '00000000', 'Floyd Hayward', '1999-05-17', '2024-02-11', '268 Amalia Lock Apt. 253', '0123456789', 2, '1', 1);
 
@@ -17,9 +17,9 @@ VALUES (24, 2024, 1),
 
 INSERT INTO `leave_requests`(`created_at`, `start_date`, `end_date`, `reason`, `status`, `user_id`)
 
-VALUES ('2023-08-10T09:12:00', '2023-08-15', '2023-08-18', 'Sick', 0, (SELECT `id` FROM `users` WHERE `email` = 'user1@gmail.com')),
-       ('2024-03-02T08:20:00', '2024-03-03', '2024-03-10', 'Wife gives birth', 0, (SELECT `id` FROM `users` WHERE `email` = 'user1@gmail.com')),
-       ('2024-04-04T12:38:00', '2024-05-10', '2024-05-12', 'Visit family', 2, (SELECT `id` FROM `users` WHERE `email` = 'user1@gmail.com')),
+VALUES ('2023-08-10T09:12:00', '2023-08-15', '2023-08-18', 'Sick', 0, (SELECT `id` FROM `users` WHERE `email` = 'leaverequest.axonactive@gmail.com')),
+       ('2024-03-02T08:20:00', '2024-03-03', '2024-03-10', 'Wife gives birth', 0, (SELECT `id` FROM `users` WHERE `email` = 'leaverequest.axonactive@gmail.com')),
+       ('2024-04-04T12:38:00', '2024-05-10', '2024-05-12', 'Visit family', 2, (SELECT `id` FROM `users` WHERE `email` = 'leaverequest.axonactive@gmail.com')),
 
        ('2024-02-11T11:24:00', '2024-02-20', '2024-02-21', 'Go wedding', 0, (SELECT `id` FROM `users` WHERE `email` = 'user2@gmail.com')),
        ('2024-02-03T07:56:00', '2024-02-09', '2024-02-12', 'Visit family', 0, (SELECT `id` FROM `users` WHERE `email` = 'user2@gmail.com')),
