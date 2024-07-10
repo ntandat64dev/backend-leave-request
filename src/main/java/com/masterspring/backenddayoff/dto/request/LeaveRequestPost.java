@@ -22,6 +22,9 @@ public class LeaveRequestPost {
     @FutureOrPresent(message = "End date must be in the future")
     private LocalDate endDate;
 
+    @NotNull
+    private int validDays;
+
     @NotNull(message = "createdAt cannot be null.")
     private LocalDateTime createdAt;
 
